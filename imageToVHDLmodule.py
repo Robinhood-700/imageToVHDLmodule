@@ -34,7 +34,7 @@ except UnidentifiedImageError:
 
 print("Image size: (", image.width, ", ", image.height, ")")
 bitmap = list(image.get_flattened_data())
-print(bitmap)
+# print(bitmap)
 print("Obtaining RGB values")
 
 RGB = []
@@ -45,14 +45,14 @@ for val in bitmap:
     R = val[0]
     G = val[1]
     B = val[2]
-    print("Decimal RGB: (", R, ", ", G, ", ", B, ")")
-    print("Hex values =(",
-          hex(R >> 4),
-          ",",
-          hex(G >> 4),
-          ", ",
-          hex(B >> 4),
-          ")")
+    # print("Decimal RGB: (", R, ", ", G, ", ", B, ")")
+    # print("Hex values =(",
+    #      hex(R >> 4),
+    #      ",",
+    #      hex(G >> 4),
+    #      ", ",
+    #      hex(B >> 4),
+    #      ")")
     RGB.append(str_prefix +
                format(R >> 4, 'x') +
                format(G >> 4, 'x') +
@@ -103,16 +103,23 @@ end img_rom;
 
 architecture Behavioral of img_rom is \n"""
 
-outputString += ("\t type rom_type is array (0 to " + str((len(RGB) - 1)) + ") of std_logic_vector(11 downto 0);\n")
+memString = ("\t type rom_type is array (0 to " + str((len(RGB) - 1)) + ") of std_logic_vector(11 downto 0);\n")
 
-outputString += "\tsignal ROM : rom_type ( "
+memString += "\tsignal ROM : rom_type ( "
 
 for i in range(0, len(RGB) - 1):
-    outputString += RGB[i]
+    memString += RGB[i]
     if i != (len(RGB) - 1):
-        outputString += ", "
+        memString += ", "
 
-outputString += ");\n"
+memString += ");\n"
+
+print("----------------------------------------------")
+print("-- ROM definition")
+print("----------------------------------------------")
+print(memString)
+
+outputString += memString
 
 outputString += "signal addr : unsigned(" + str(math.ceil(math.log2(len(RGB)))) +" downto 0);"
 outputString += """ begin
