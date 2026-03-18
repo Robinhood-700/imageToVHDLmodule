@@ -8,7 +8,7 @@ from PIL import UnidentifiedImageError
 print("Args: ", sys.argv)
 
 
-def getImagePath():
+def getImagePath():  # Returns a the path of the image
     while (True):
         path = input("Please input the name of the file: ")
         if os.path.isfile(path):
@@ -17,7 +17,7 @@ def getImagePath():
             print("Invalid file. Please try again.")
 
 
-if len(sys.argv) - 1 > 1:
+if len(sys.argv) - 1 > 1:  # Check if correct number of args
     print("Only provide one image at a time.")
     exit()
 
@@ -46,14 +46,6 @@ for val in bitmap:
     R = val[0]
     G = val[1]
     B = val[2]
-    # print("Decimal RGB: (", R, ", ", G, ", ", B, ")")
-    # print("Hex values =(",
-    #      hex(R >> 4),
-    #      ",",
-    #      hex(G >> 4),
-    #      ", ",
-    #      hex(B >> 4),
-    #      ")")
     RGB.append(str_prefix +
                format(R >> 4, 'x') +
                format(G >> 4, 'x') +
@@ -62,23 +54,24 @@ for val in bitmap:
 print("RGB values: ", RGB)
 
 imagebytes = bytearray(image.tobytes())
-print("imagebytes: ", imagebytes)
+# print("imagebytes: ", imagebytes)
 for b in range(len(imagebytes)):
     if ((b % 4) == 3):
         continue
     imagebytes[b] = (imagebytes[b] >> 4) << 4
 
-print("new imagebytes: ", imagebytes)
+# print("new imagebytes: ", imagebytes)
 newImage = Image.frombytes(image.mode, image.size, bytes(imagebytes))
-filename = sys.argv[1].split("/")[-1]
-print("File: ", filename)
+filename = sys.argv[1].split("/")[-1]  # obtains the name of the file (no extension)
+# print("File: ", filename)
 name, ext = os.path.splitext(filename)
 filename = f"{name}_preview{ext}"
-print("filename: ", filename)
+# print("filename: ", filename)
 
 newImage.save(filename)
 print("Image preview saved as: ", filename)
 
+# Now we make the VHDL code
 outputString = """----------------------------------------------------------------------------------
 -- Company: 
 -- Engineer: 
@@ -122,6 +115,8 @@ end img_rom;
 
 architecture Behavioral of img_rom is \n"""
 
+# Make memString seperately in case user wants to copy and paste for different
+# structure
 memString = ("\ttype rom_type is array (0 to " + str((len(RGB) - 1)) + ") of std_logic_vector(11 downto 0);\n")
 
 memString += "\tsignal ROM : rom_type:= ( "
@@ -129,6 +124,7 @@ memString += "\tsignal ROM : rom_type:= ( "
 for i in range(len(RGB)):
     memString += RGB[i]
     if ((i % 8 == 0) and (i > 0)):
+        # print newline and tabs to avoid long lines
         memString += "\n\t\t\t\t"
     if i != (len(RGB) - 1):
         memString += ", "
@@ -140,9 +136,16 @@ print("-- ROM definition")
 print("----------------------------------------------")
 print(memString)
 
+# Add memstring to our VHDL code
 outputString += memString
 
-outputString += "\tsignal addr : unsigned(" + str(math.ceil(math.log2(len(RGB))) - 1) +" downto 0);\n\n"
+# How many bits do we need to represent the largest address?
+# Ceil because we can't use half a bit
+# -1 because of VHDL vector arrays starting at 0
+outputString += ("\tsignal addr : unsigned(" +
+                 str(math.ceil(math.log2(len(RGB))) - 1) +
+                 " downto 0);\n\n")
+
 outputString += """begin
     
     process(clk, reset)
@@ -151,6 +154,7 @@ outputString += """begin
 				addr <= (others => '0');
 		elsif (clk'event and clk='1') then
 			if (enable = '1') then\n """
+# The highest index is len() - 1
 outputString += ("\t\t\t\tif (addr >= " + str((len(RGB) - 1)) + ") then\n")
 outputString += """	\taddr <= (others => '0');
 				else
