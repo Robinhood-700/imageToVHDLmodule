@@ -124,7 +124,7 @@ print(memString)
 
 outputString += memString
 
-outputString += "\tsignal addr : unsigned(" + str(math.ceil(math.log2(len(RGB) - 1))) +" downto 0);\n\n"
+outputString += "\tsignal addr : unsigned(" + str(math.ceil(math.log2(len(RGB))) - 1) +" downto 0);\n\n"
 outputString += """begin
     
     process(clk, reset)
