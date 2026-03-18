@@ -61,6 +61,24 @@ for val in bitmap:
                str_postfix)
 print("RGB values: ", RGB)
 
+imagebytes = bytearray(image.tobytes())
+print("imagebytes: ", imagebytes)
+for b in range(len(imagebytes)):
+    if ((b % 4) == 3):
+        continue
+    imagebytes[b] = (imagebytes[b] >> 4) << 4
+
+print("new imagebytes: ", imagebytes)
+newImage = Image.frombytes(image.mode, image.size, bytes(imagebytes))
+filename = sys.argv[1].split("/")[-1]
+print("File: ", filename)
+name, ext = os.path.splitext(filename)
+filename = f"{name}_preview{ext}"
+print("filename: ", filename)
+
+newImage.save(filename)
+print("Image preview saved as: ", filename)
+
 outputString = """----------------------------------------------------------------------------------
 -- Company: 
 -- Engineer: 
