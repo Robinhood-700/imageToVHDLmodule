@@ -1,5 +1,9 @@
 # About
 Simple Python script designed to convert an image file into a VHDL module (.vhd file) containing a ROM with the RGB values of the image.
+# Features
+* Outputs the hex values to the screen
+* Saves a preview of what the image will look like once downscaled for VGA
+* Saves a VHDL module .vhd file ready for you to use
 # Usage
 Execute the script and pass the image as an argument:
 `./imageToVHDLmodule.py image.jpg`
@@ -22,6 +26,8 @@ python -m pip install --upgrade Pillow
 * Use a python virtual enviroment to avoid any dependency trouble.
 # TODO
 1. Check image size before execution.
-2. Downscale images that are too big.
+2. Downscale images that are too big.(?)
 3. More options when creating the module (component name, architecture name, output options...)
 4. Help and examples
+5. Lots of output options
+6. Option to create preview file or not
