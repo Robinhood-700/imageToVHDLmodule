@@ -111,7 +111,7 @@ memString += "\tsignal ROM : rom_type:= ( "
 for i in range(len(RGB)):
     memString += RGB[i]
     if ((i % 8 == 0) and (i > 0)):
-        memString += "\n\t\t\t\t\t\t\t\t\t"
+        memString += "\n\t\t\t\t"
     if i != (len(RGB) - 1):
         memString += ", "
 
@@ -125,7 +125,7 @@ print(memString)
 outputString += memString
 
 outputString += "\tsignal addr : unsigned(" + str(math.ceil(math.log2(len(RGB) - 1))) +" downto 0);\n\n"
-outputString += """\tbegin
+outputString += """begin
     
     process(clk, reset)
     begin
