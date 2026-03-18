@@ -35,6 +35,7 @@ except UnidentifiedImageError:
 print("Image size: (", image.width, ", ", image.height, ")")
 bitmap = list(image.get_flattened_data())
 # print(bitmap)
+# print("Length of bitmap: ", len(bitmap))
 print("Obtaining RGB values")
 
 RGB = []
@@ -103,12 +104,14 @@ end img_rom;
 
 architecture Behavioral of img_rom is \n"""
 
-memString = ("\t type rom_type is array (0 to " + str((len(RGB) - 1)) + ") of std_logic_vector(11 downto 0);\n")
+memString = ("\ttype rom_type is array (0 to " + str((len(RGB) - 1)) + ") of std_logic_vector(11 downto 0);\n")
 
-memString += "\tsignal ROM : rom_type ( "
+memString += "\tsignal ROM : rom_type:= ( "
 
-for i in range(0, len(RGB) - 1):
+for i in range(len(RGB)):
     memString += RGB[i]
+    if i % 8 == 0:
+        memString += "\n"
     if i != (len(RGB) - 1):
         memString += ", "
 
@@ -121,7 +124,7 @@ print(memString)
 
 outputString += memString
 
-outputString += "signal addr : unsigned(" + str(math.ceil(math.log2(len(RGB)))) +" downto 0);"
+outputString += "signal addr : unsigned(" + str(math.ceil(math.log2(len(RGB) - 1))) +" downto 0);"
 outputString += """ begin
     
     process(clk, reset)
@@ -129,9 +132,9 @@ outputString += """ begin
 		if (reset = '1') then
 				addr <= (others => '0');
 		elsif (clk'event and clk='1') then
-			if (enable = '1') then """
-outputString += ("if (addr >= " + str((len(RGB) - 1)) + ") then\n")
-outputString += """	addr <= (others => '0');
+			if (enable = '1') then\n """
+outputString += ("\t\t\t\tif (addr >= " + str((len(RGB) - 1)) + ") then\n")
+outputString += """	\taddr <= (others => '0');
 				else
 					addr <= addr + 1;
 				end if;
