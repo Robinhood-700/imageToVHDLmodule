@@ -27,7 +27,7 @@ else:
     imagePath = getImagePath()
 
 try:
-    image = Image.open(imagePath)
+    image = Image.open(imagePath).convert("RGB")
 except UnidentifiedImageError:
     print("Image could not be processed.")
     exit()
